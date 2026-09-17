@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Track Status</title>
+</head>
+<body>
+    <nav>
+        <div class="heading">
+            My Online Store
+        </div>
+        <ul>            
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            {% if session.loggedin %}
+            <li><a href="{{ url_for('cart') }}">Cart</a></li>
+            <li><a href="{{ url_for('track_order') }}" class="active">Track Orders</a></li>
+            {% if session.is_admin %}
+                <li><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+            {% endif %}            
+            <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
+            <li style="background-color: rgb(80, 80, 172);border-radius: 5px;"><span style="font-size: 13px;color:#f1f0f5;padding: 5px;">{{ session.username }}</span></li>
+            {% else %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+                <li><a href="{{ url_for('register') }}">Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <center><br><br>
+    <p style="color:#f1f0f5;">Tracking Order : #{{ order.id }}</p>
+    <p style="color:#f1f0f5; font-size:13px;margin-bottom: 40px;">Placed on: {{ order.created_at.strftime('%B %d, %Y') }}</p>
+    <p style="color:#82b440; font-size:16px;font-weight:500;margin-bottom: 40px;">Status : {{ order.status }}</p>
+    <p style="color:#f1f0f5;"><strong>Total Amount:</strong> ₹{{ "%.2f"|format(order.total_price) }}</p>                
+    </center>
+</body>
+</html>

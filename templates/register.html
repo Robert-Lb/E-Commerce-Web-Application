@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>User Registration</title>
+</head>
+<body>    
+    <div class="container">
+        <div class="login-box">        
+            <div class="login">
+                <span style="font-size: 18px;">Create Account</span>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                    <span class="error-msg {{ category }}">{{ message }}</span>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
+            <form action="{{ url_for('register') }}" method="POST">
+                <div>
+                    <label>Username</label>
+                    <input type="text" name="username" required>
+                </div>
+                <div>
+                    <label>Email</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div>
+                    <label>Password</label>
+                    <input type="password" name="password" required>
+                </div>
+                <div>
+                    <button type="submit" class="btn-sign-in">Register</button>
+                </div>
+            </form>
+            <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+        </div>
+    </div>
+</body>
+</html>

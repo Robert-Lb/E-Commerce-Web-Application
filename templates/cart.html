@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Cart</title>
+</head>
+<body>
+    <nav>
+        <div class="heading">
+            My Online Store
+        </div>
+        <ul>            
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            {% if session.loggedin %}
+            <li><a href="{{ url_for('cart') }}" class="active">Cart</a></li>
+            <li><a href="{{ url_for('track_order') }}">Track Orders</a></li>
+            {% if session.is_admin %}
+                <li><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+            {% endif %}            
+            <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
+            <li style="background-color: rgb(80, 80, 172);border-radius: 5px;"><span style="font-size: 13px;color:#f1f0f5;padding: 5px;">{{ session.username }}</span></li>
+            {% else %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+                <li><a href="{{ url_for('register') }}">Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <center>              
+    <h2>Shopping Cart</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="color: #ce9909; margin-top:-20px;margin-bottom: 20px;">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    {% if cart_items %}    
+    <table class="tbl-inventory">
+        <tr>            
+            <th>Product</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Total</th>
+            <th>Action</th>
+        </tr>
+        {% for item in cart_items %}       
+        <tr>                        
+            <td><strong>{{ item.name }}</strong></td>
+            <td>₹{{ "%.2f"|format(item.price) }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>₹{{ "%.2f"|format(item.price * item.quantity) }}</td>
+            <td><a href="{{ url_for('remove_from_cart', cart_id=item.id) }}" class="del-product" onclick="return confirm('Are you sure you want to remove this product from your Cart?')">Remove</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div style="color:#f1f0f5;margin-top: -20px;margin-bottom: 40px;"><strong>Grand Total </strong>: ₹{{ "%.2f"|format(total_price) }}</div>
+    <div style="color:#f1f0f5;margin-top: 0px;margin-bottom: 40px;font-size: 18px;">
+        <a href="/" style="text-decoration: none;color:#f1f0f5;font-size: 16px;">Continue Shopping</a> &nbsp;&nbsp;|&nbsp;&nbsp; 
+        <a href="{{ url_for('checkout') }}" style="text-decoration: none;color:#21e72b;font-size: 16px;">Proceed to Checkout</a>
+    </div>        
+    {% else %}
+    <div>
+        <span style="color:#f1f0f5;margin-top: -20px;margin-bottom: 40px;">Cart is empty!</span>
+        <a href="/" style="color:#21e72b;text-decoration: none;">Browse Products</a>
+    </div>
+    {% endif %}    
+    </center>
+</body>
+</html>

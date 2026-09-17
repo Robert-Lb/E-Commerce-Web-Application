@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Checkout</title>
+</head>
+<body>
+    <nav>
+        <div class="heading">
+            My Online Store
+        </div>
+        <ul>            
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            {% if session.loggedin %}
+            <li><a href="{{ url_for('cart') }}" class="active">Cart</a></li>
+            <li><a href="{{ url_for('track_order') }}">Track Orders</a></li>
+            {% if session.is_admin %}
+                <li><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+            {% endif %}            
+            <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
+            <li style="background-color: rgb(80, 80, 172);border-radius: 5px;"><span style="font-size: 13px;color:#f1f0f5;padding: 5px;">{{ session.username }}</span></li>
+            {% else %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+                <li><a href="{{ url_for('register') }}">Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <center>    
+    <h2 style="color:#ce9909;">Order Summary</h2>
+    <div class="ord-summary">
+        <span><strong>Sub-Total </strong>: ₹{{ "%.2f"|format(total_price) }}</span>   
+        <span><strong>Shipping </strong>: Free</span>                    
+        <span><strong>Grand Total </strong>: ₹{{ "%.2f"|format(total_price) }}</span>
+    </div>                
+                
+    <h2 style="color:#ce9909;margin-top: 40px;">Shipping & Payment Details</h2>
+    <div class="form-section">
+        <form action="{{ url_for('checkout') }}" method="POST">
+            <div>
+                <label>Delivery Address</label>
+                <textarea rows="3" placeholder="Enter your full address" required></textarea>
+            </div>
+            <div>
+                <label>Payment Method :</label>
+                <select class="status" style="font-size: 13px;" required>
+                    <option value="cod" style="font-size: 13px;">Cash on Delivery (COD)</option>
+                </select>
+            </div>
+            <div class="btn-holder">
+                <button type="submit" class="ord-btn">Place Order</button>
+            </div>
+        </form>
+    </div>
+    </center>      
+</body>
+</html>

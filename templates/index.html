@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>My Online Store</title>
+</head>
+<body>
+    <nav>
+        <div class="heading">
+            My Online Store
+        </div>
+        <ul>            
+            <li><a href="{{ url_for('index') }}" class="active">Home</a></li>
+            {% if session.loggedin %}
+            <li><a href="{{ url_for('cart') }}">Cart</a></li>
+            <li><a href="{{ url_for('track_order') }}">Track Orders</a></li>
+            {% if session.is_admin %}
+                <li><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+            {% endif %}            
+            <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
+            <li style="background-color: rgb(80, 80, 172);border-radius: 5px;"><span style="font-size: 13px;color:#f1f0f5;padding: 5px;">{{ session.username }}</span></li>
+            {% else %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+                <li><a href="{{ url_for('register') }}">Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+            
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h2>Available Products</h2>
+    {% if products %}
+    <div class="card-container">
+        {% for prod in products %}
+        <div class="card">
+            <div class="card-image">
+                <img src="{{ url_for('static', filename=prod.image_url) }}" alt="{{ prod.name }}">
+            </div>
+            <div class="card-content">
+                <h3>{{ prod.name }}</h3>
+                <p>{{ prod.description }}</p>
+                <div class="prod_price">Price: ₹{{ "%.2f"|format(prod.price) }}</div>
+                <div class="prod_stock">
+                {% if prod.stock > 0 %}
+                        In Stock: {{ prod.stock }}</div>
+                <form action="{{ url_for('add_to_cart', product_id=prod.id) }}" method="POST">
+                    <span class="qty">Qty: </span>
+                    <input type="number" name="quantity" value="1" min="1" max="{{ prod.stock }}" style="width: 50px;" class="box" required>
+                    <button type="submit" class="add-to-cart">Add to Cart</button>
+                </form>
+                {% else %}
+                    <span>Out of Stock</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div>
+            <center>
+            <span style="color:#f4f7f8;">Inventory is empty
+            <p>Log in as an <span style="color:#82b440;font-style: italic;">Administrator</span> &nbsp;to add a product.</p></span>
+            </center>
+        </div>              
+    </div>
+    {% endif %}                                                                                                                                
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Order Tracking</title>
+</head>
+<body>
+    <nav>
+        <div class="heading">
+            My Online Store
+        </div>
+        <ul>            
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            {% if session.loggedin %}
+            <li><a href="{{ url_for('cart') }}">Cart</a></li>
+            <li><a href="{{ url_for('track_order') }}" class="active">Track Orders</a></li>
+            {% if session.is_admin %}
+                <li><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+            {% endif %}            
+            <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
+            <li style="background-color: rgb(80, 80, 172);border-radius: 5px;"><span style="font-size: 13px;color:#f1f0f5;padding: 5px;">{{ session.username }}</span></li>
+            {% else %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+                <li><a href="{{ url_for('register') }}">Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <center>
+    <h2>Track Orders</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="error-msg">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}        
+    <div class="form-section-track">
+        <p style="margin-top: 10px;margin-bottom: 10px;font-size: 14px;">Search Order By ID</p>            
+        <form action="{{ url_for('track_order') }}" method="POST">
+            <div>
+                <input type="number" name="order_id" required>
+            </div>
+            <div>
+                <button type="submit" class="btn-track">Track Order</button>
+            </div>
+        </form>        
+    </div>    
+    <div>
+        <h2>Order History</h2>
+            {% if user_orders %}
+            <table class="tbl-inventory">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Total Cost</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ord in user_orders %}
+                    <tr>
+                        <td><strong>#{{ ord.id }}</strong></td>
+                        <td>{{ ord.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>${{ "%.2f"|format(ord.total_price) }}</td>
+                        <td>
+                            {% if ord.status == 'Processing' %}
+                                <span>Processing</span>
+                            {% elif ord.status == 'Shipped' %}
+                                <span>Shipped</span>
+                            {% else %}
+                                <span>Delivered</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('track_order_page', order_id=ord.id) }}" style="text-decoration:none; color:#82b440;font-weight: 500;">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p style="color:#82b440;font-weight: 500;"">You haven't placed any orders yet.</p>
+            {% endif %}       
+</div>
+</center>  
+</body>
+</html>
